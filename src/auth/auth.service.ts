@@ -22,15 +22,14 @@ export class AuthService {
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
     const { username, password } = authCredentialsDto;
     const salt = await bcrypt.genSalt();
-    const user = await this.userModel.create({
-      username,
-      salt,
-      password: await this.hashPassword(password, salt),
-    });
     try {
-      await user.save();
+      await this.userModel.create({
+        username,
+        salt,
+        password: await this.hashPassword(password, salt),
+      });
     } catch (error) {
-      if (error.code === '23505') {
+      if (error.code === 11000) {
         throw new ConflictException('Username already exists');
       } else {
         throw new InternalServerErrorException();
@@ -42,7 +41,7 @@ export class AuthService {
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<string> {
     const { username, password } = authCredentialsDto;
-    const user = await this.userModel.findOne({ where: { username } });
+    const user = await this.userModel.findOne({ username });
     if (
       user &&
       (await this.validatePassword(password, user.password, user.salt))
