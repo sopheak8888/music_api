@@ -8,7 +8,7 @@ import { CommentModule } from './comment/comment.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot('mongodb://localhost:27023/music-api'),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     AuthModule,
     MusicModule,
     CommentModule,
